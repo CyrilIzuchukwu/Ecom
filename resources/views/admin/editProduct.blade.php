@@ -12,12 +12,12 @@
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0">Create product</h4>
+                        <h4 class="mb-sm-0">Update product</h4>
 
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Product</a></li>
-                                <li class="breadcrumb-item active">Create product</li>
+                                <li class="breadcrumb-item active">Update product</li>
                             </ol>
                         </div>
 
@@ -26,7 +26,7 @@
             </div>
             <!-- end page title -->
 
-            <form action="{{ route('addProduct') }}" enctype="multipart/form-data" method="POST" id="createproduct-form" autocomplete="off" class="needs-validation">
+            <form action="{{ route('updateProduct', $product->id) }}" enctype="multipart/form-data" method="POST" id="createproduct-form" autocomplete="off" class="needs-validation">
                 @csrf
                 <div class="row justify-content-center">
                     <div class="col-xl-10 col-lg-8">
@@ -47,10 +47,9 @@
                                 </div>
                             </div>
                             <div class="card-body">
-
                                 <div class="mb-3">
                                     <label class="form-label" for="product-title-input">Product Name</label>
-                                    <input type="text" name="productName" class="form-control" id="product-title-input" value="{{ old('productName') }}" placeholder="Enter product name">
+                                    <input type="text" name="productName" class="form-control" id="product-title-input" value="{{ $product->productName }}" placeholder="Enter product name">
                                     <span class="text-danger">@error('productName'){{ $message }} @enderror</span>
                                 </div>
 
@@ -65,11 +64,10 @@
                                             <option disabled="true" selected="false">Select product category</option>
 
                                             @foreach($categoryLinks as $category)
-                                            <option value="{{ $category->category }} " {{ (session('input.productCategory') == $category->category || old('productCategory') == $category->category) ? 'selected' : '' }}>{{ $category->category }}</option>
+                                            <option value="{{ $category->category }}" {{ $category->category == $product->productCategory ? 'selected' : '' }}>{{ $category->category }}</option>
                                             @endforeach
 
                                         </select>
-                                        <span class="text-danger">@error('productCategory'){{ $message }} @enderror</span>
                                     </div>
                                 </div>
                             </div>
@@ -92,6 +90,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="card-body mb-1">
+                                <label for="">Previous Image</label>
+                                <img src="/productFolder/{{ $product->productImage }}" width="100" alt="">
+                            </div>
                             <div class="card-body">
                                 <input type="file" name="productImage" class="form-control">
                             </div>
@@ -104,8 +106,7 @@
                             </div>
                             <div class="card-body">
                                 <p class="text-muted mb-2">Add short description for product</p>
-                                <textarea id="summernote" class="form-control" name="productDescription" rows="3">{{ session('input.productDescription', old('productDescription')) }}</textarea>
-                                <span class="text-danger">@error('productDescription'){{ $message }} @enderror</span>
+                                <textarea id="summernote" class="form-control" name="productDescription" rows="3">{{ $product->productDescription }}</textarea>
                             </div>
                             <!-- end card body -->
                         </div>
@@ -131,7 +132,7 @@
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <label class="form-label" for="manufacturer-name-input">Manufacturer Name</label>
-                                            <input type="text" value="{{ session('input.manufacturerName', old('manufacturerName')) }}" name="manufacturerName" class="form-control" id="manufacturer-name-input" placeholder="Enter manufacturer name">
+                                            <input type="text" value="{{ $product->manufacturerName }}" name="manufacturerName" class="form-control" id="manufacturer-name-input" placeholder="Enter manufacturer name">
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
@@ -139,8 +140,9 @@
                                             <label for="choices-publish-status-input" class="form-label">Status</label>
 
                                             <select class="form-select" name="status">
-                                                <option value="available">Available</option>
-                                                <option value="not-available">Not Available</option>
+                                                <option value="available" {{ $product->status == 'available' ? 'selected' : '' }}>
+                                                    Available</option>
+                                                <option value="not-available" {{ $product->status == 'not available' ? 'selected' : '' }}>Not Available</option>
                                             </select>
                                         </div>
                                     </div>
@@ -153,7 +155,7 @@
                                             <label class="form-label" for="product-price-input">Price</label>
                                             <div class="input-group has-validation mb-3">
                                                 <span class="input-group-text" id="product-price-addon">$</span>
-                                                <input type="text" value="" name="productPrice" class="form-control" id="product-price-input" placeholder="Enter price" aria-label="Price" aria-describedby="product-price-addon">
+                                                <input type="text" value="{{ $product->productPrice }}" name="productPrice" class="form-control" id="product-price-input" placeholder="Enter price" aria-label="Price" aria-describedby="product-price-addon">
                                             </div>
 
                                         </div>
@@ -163,7 +165,7 @@
                                             <label class="form-label" for="product-discount-input">Discount</label>
                                             <div class="input-group has-validation mb-3">
                                                 <span class="input-group-text" id="product-discount-addon">%</span>
-                                                <input type="text" value="" name="discountPrice" class="form-control" id="product-discount-input" placeholder="Enter discount" aria-label="discount" aria-describedby="product-discount-addon">
+                                                <input type="text" value="{{ $product->discountPrice }}" name="discountPrice" class="form-control" id="product-discount-input" placeholder="Enter discount" aria-label="discount" aria-describedby="product-discount-addon">
                                             </div>
 
                                         </div>
@@ -172,7 +174,7 @@
                                     <div class="col-lg-3">
                                         <div class="mb-3">
                                             <label class="form-label" for="">Quantity</label>
-                                            <input type="text" value="" name="quantity" class="form-control" id="manufacturer-name-input" placeholder="Enter QuantityE">
+                                            <input type="text" value="{{ $product->quantity }}" name="quantity" class="form-control" id="manufacturer-name-input" placeholder="Enter QuantityE">
                                         </div>
                                     </div>
                                     <!-- end col -->
@@ -184,10 +186,10 @@
                                             <label for="choices-publish-status-input" class="form-label">Warranty</label>
 
                                             <select class="form-select" name="warranty">
-                                                <option value="0">0</option>
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
+                                                <option value="0" {{ $product->warranty == '0' ? 'selected' : '' }} 0</option>
+                                                <option value="1" {{ $product->warranty == '1' ? 'selected' : '' }}>1</option>
+                                                <option value="2" {{ $product->warranty == '2' ? 'selected' : '' }}>2</option>
+                                                <option value="3" {{ $product->warranty == '3' ? 'selected' : '' }}>3</option>
                                             </select>
                                         </div>
                                     </div>
@@ -245,26 +247,7 @@
 
 
 
-
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<!-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const input = document.getElementById('product-title-input');
-
-        // Check if there's a saved value in sessionStorage
-        const savedValue = sessionStorage.getItem('productName');
-        if (savedValue) {
-            input.value = savedValue;
-        }
-
-        // Save the input value to sessionStorage on input
-        input.addEventListener('input', function() {
-            sessionStorage.setItem('productName', input.value);
-        });
-    });
-</script> -->
 
 
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">

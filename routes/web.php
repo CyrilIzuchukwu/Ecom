@@ -64,4 +64,11 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
 
     // route to view all the products created
     Route::get('admin/products', [AdminController::class, 'products'])->name('products');
+
+
+    // edit product
+    Route::get('/editProduct/{id}', [AdminController::class, 'editProduct'])->name('editProduct');
+
+    // update product
+    Route::post('/updateProduct/{id}', [AdminController::class, 'updateProduct'])->name('updateProduct');
 });
